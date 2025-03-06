@@ -1,4 +1,4 @@
-# Search It API Erweiterung
+# Idee: Search It API Erweiterung
 
 Eine flexible, konfigurierbare API-Erweiterung für das REDAXO AddOn "Search It", die Suchanfragen über eine REST-API ermöglicht.
 
@@ -708,7 +708,3 @@ rex_api_search_it_search::registerSearchConfiguration('quick_search', function (
 ## Lizenz
 
 MIT
-
-## Autor
-
-FriendsOfREDAXO
