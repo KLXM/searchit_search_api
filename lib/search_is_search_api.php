@@ -18,6 +18,7 @@ class rex_api_search_it_search extends rex_api_function
         'defaultSearchMode' => 'like',
         'enableSimilarWords' => true,
         'defaultSimilarWordsMode' => 1, // SEARCH_IT_SIMILARWORDS_SOUNDEX
+        'searchAllLanguages' => true, // Neue Option für Spracheinstellung
     ];
     
     /**
@@ -53,6 +54,9 @@ class rex_api_search_it_search extends rex_api_function
         $searchTerm = rex_request('search', 'string', '');
         $searchKey = rex_request('key', 'string', 'default');
         
+        // Get language parameter, if provided
+        $clangId = rex_request('clang', 'int', null);
+        
         // Check if search term is provided
         if (empty($searchTerm)) {
             // Direkte Ausgabe mit exit für JSON
@@ -65,8 +69,18 @@ class rex_api_search_it_search extends rex_api_function
         }
         
         try {
-            // Initialize Search It with language
-            $search_it = new search_it(rex_clang::getCurrentId());
+            // Initialize Search It with language setting
+            // False means search in all languages if searchAllLanguages is true
+            $langParam = false;
+            
+            // If specific language is requested or we don't want to search all languages
+            if (!is_null($clangId)) {
+                $langParam = $clangId;
+            } elseif (!self::$defaultConfig['searchAllLanguages']) {
+                $langParam = rex_clang::getCurrentId();
+            }
+            
+            $search_it = new search_it($langParam);
             
             // Apply base configuration
             $this->applyBaseConfiguration($search_it);
@@ -141,6 +155,7 @@ class rex_api_search_it_search extends rex_api_function
                 'id' => $hit['id'],
                 'fid' => $hit['fid'],
                 'type' => $hit['type'],
+                'clang' => $hit['clang'], // Sprache mit ausgeben
                 'teaser' => $hit['teaser'],
                 'highlightedtext' => $hit['highlightedtext']
             ];
@@ -206,4 +221,3 @@ class rex_api_search_it_search extends rex_api_function
         }
     }
 }
-
